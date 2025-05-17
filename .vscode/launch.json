@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run Chartr App",
+        "type": "python",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "module": "src.main",
+        "console": "integratedTerminal",
+        "justMyCode": true
+      }
+    ]
+  }
