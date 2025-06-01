@@ -1,13 +1,8 @@
 from langgraph.graph import StateGraph
-from typing import TypedDict
-from src.query import nl_to_sql
+from src.query import extract_db_schema, nl_to_sql
 from src.db import get_connection
-from src.visualize import plot_data
-
-class WorkflowState(TypedDict):
-    nl_query: str
-    sql_query: str
-    results: list
+from src.types import WorkflowState
+from src.visualize import get_chart_type, plot_data
 
 def convert_nl_to_sql(state: WorkflowState):
     nl_query = state["nl_query"]
@@ -22,7 +17,8 @@ def execute_sql(state: WorkflowState):
         cursor = conn.cursor()
         cursor.execute(sql_query)
         results = cursor.fetchall()
-        return {"results": results}
+        column_names = [desc[0] for desc in cursor.description]
+        return {"results": results, "column_names": column_names}
     except Exception as e:
         print(f"Error executing SQL query: {e}")
         return {"results": []}
@@ -30,21 +26,29 @@ def execute_sql(state: WorkflowState):
 def visualize_results(state: WorkflowState):
     results = state["results"]
     print(results)
-    labels = [row[0] for row in results]
-    values = [row[1] for row in results]
-    plot_data(labels, values)
+    chart_config = state["chart_config"]
+    columns = state["column_names"]
+    plot_data(results, chart_config.get("chart_type"), columns, chart_config.get("title"))
     return {}
+
+def get_chart_recommendation(state: WorkflowState):
+    nl_query = state["nl_query"]
+    sql_query = state["sql_query"]
+    chart_config = get_chart_type(nl_query, sql_query, extract_db_schema())
+    return {"chart_config": chart_config}
 
 def create_workflow():
     graph = StateGraph(WorkflowState)
 
     graph.add_node("convert_nl_to_sql", convert_nl_to_sql)
     graph.add_node("execute_sql", execute_sql)
+    graph.add_node("recommend_chart_type", get_chart_recommendation)
     graph.add_node("visualize_results", visualize_results)
 
     graph.set_entry_point("convert_nl_to_sql")
     graph.add_edge("convert_nl_to_sql", "execute_sql")
-    graph.add_edge("execute_sql", "visualize_results")
+    graph.add_edge("execute_sql", "recommend_chart_type")
+    graph.add_edge("recommend_chart_type", "visualize_results")
 
     return graph.compile()
 
