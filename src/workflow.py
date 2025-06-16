@@ -35,7 +35,9 @@ def visualize_results(state: WorkflowState):
         print(results)
         chart_config = state["chart_config"]
         columns = state["column_names"]
-        plot_data(results, chart_config.get("chart_type"), columns, chart_config.get("title"))
+        plot_data(
+            results, chart_config.get("chart_type"), columns, chart_config.get("title")
+        )
         return {}
 
 

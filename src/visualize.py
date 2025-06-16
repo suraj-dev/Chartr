@@ -6,8 +6,7 @@ from src.types import ChartConfig
 
 
 def get_chart_type(nl_query: str, sql_query: str, schema: str) -> ChartConfig:
-    prompt = (
-        f"""
+    prompt = f"""
         You are a data visualization expert.
         Given the following user query: '{nl_query}'
         And the corresponding SQL query: '{sql_query}'
@@ -18,12 +17,11 @@ def get_chart_type(nl_query: str, sql_query: str, schema: str) -> ChartConfig:
         Return the output as a json object with keys: chart_type, x_label, y_label, and title.
         Return only the JSON object and nothing more.
         """
-    )
     client = get_openai_client()
     response = client.chat.completions.create(
         model="hermes-3-llama-3.1-8b",  # or your local LLM's name
         messages=[{"role": "user", "content": prompt}],
-        temperature=0.7
+        temperature=0.7,
     )
     print(f"Chart config: {response.choices[0].message.content}")
     chart_config = json.loads(response.choices[0].message.content)

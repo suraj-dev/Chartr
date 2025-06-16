@@ -5,6 +5,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.jaeger.thrift import JaegerExporter
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 
 # Set up the tracer provider and Jaeger exporter
