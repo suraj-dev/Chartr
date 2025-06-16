@@ -8,9 +8,9 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Install the git hook to run the linter automatically:
+Install the git hook to run the linter and formatter automatically:
 ```bash
 pre-commit install
 ```
 
-This uses flake8 with the configuration in `.flake8`.
+This uses **black** for code formatting and **flake8** for linting. The flake8 configuration is in `.flake8`.

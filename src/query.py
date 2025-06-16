@@ -26,12 +26,14 @@ def extract_db_schema() -> str:
         connection = get_connection()
         cursor = connection.cursor()
         # Get all table names (you can filter for a specific schema if needed)
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = 'public'
             AND table_type = 'BASE TABLE'
-        """)
+        """
+        )
         tables = [row[0] for row in cursor.fetchall()]
 
         schema_str = ""
@@ -94,7 +96,7 @@ def run_nl_to_sql_with_verification(nl_query):
     response = client.chat.completions.create(
         model="sqlcoder-7b-2",
         messages=[{"role": "user", "content": prompt_str}],
-        temperature=0.0
+        temperature=0.0,
     )
     # Extract and return the SQL text
     query = response.choices[0].message.content.strip()
@@ -116,7 +118,7 @@ def run_nl_to_sql_with_verification(nl_query):
             response = client.chat.completions.create(
                 model="sqlcoder-7b-2",
                 messages=[{"role": "user", "content": retry_prompt_str}],
-                temperature=0.0
+                temperature=0.0,
             )
             query = response.choices[0].message.content.strip()
         else:
