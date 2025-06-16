@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph
-from src.query import extract_db_schema, nl_to_sql
+from src.query import extract_db_schema, run_nl_to_sql_with_verification
 from src.db import get_connection
 from src.types import WorkflowState
 from src.visualize import get_chart_type, plot_data
@@ -8,7 +8,7 @@ from src.observability import tracer
 def convert_nl_to_sql(state: WorkflowState):
     with tracer.start_as_current_span("convert_nl_to_sql"):
         nl_query = state["nl_query"]
-        sql_query = nl_to_sql(nl_query)
+        sql_query = run_nl_to_sql_with_verification(nl_query)
         print("Converted NL to SQL:", sql_query)
         return {"sql_query": sql_query}
 
