@@ -4,6 +4,7 @@ import plotly.express as px
 from src.query import get_openai_client
 from src.types import ChartConfig
 
+
 def get_chart_type(nl_query: str, sql_query: str, schema: str) -> ChartConfig:
     prompt = (
         f"""

@@ -5,12 +5,14 @@ from src.types import WorkflowState
 from src.visualize import get_chart_type, plot_data
 from src.observability import tracer
 
+
 def convert_nl_to_sql(state: WorkflowState):
     with tracer.start_as_current_span("convert_nl_to_sql"):
         nl_query = state["nl_query"]
         sql_query = run_nl_to_sql_with_verification(nl_query)
         print("Converted NL to SQL:", sql_query)
         return {"sql_query": sql_query}
+
 
 def execute_sql(state: WorkflowState):
     sql_query = state["sql_query"]
@@ -26,6 +28,7 @@ def execute_sql(state: WorkflowState):
         print(f"Error executing SQL query: {e}")
         return {"results": []}
 
+
 def visualize_results(state: WorkflowState):
     with tracer.start_as_current_span("visualize_results"):
         results = state["results"]
@@ -35,12 +38,14 @@ def visualize_results(state: WorkflowState):
         plot_data(results, chart_config.get("chart_type"), columns, chart_config.get("title"))
         return {}
 
+
 def get_chart_recommendation(state: WorkflowState):
     with tracer.start_as_current_span("get_chart_recommendation"):
         nl_query = state["nl_query"]
         sql_query = state["sql_query"]
         chart_config = get_chart_type(nl_query, sql_query, extract_db_schema())
         return {"chart_config": chart_config}
+
 
 def create_workflow():
     graph = StateGraph(WorkflowState)
@@ -56,6 +61,7 @@ def create_workflow():
     graph.add_edge("recommend_chart_type", "visualize_results")
 
     return graph.compile()
+
 
 def run_workflow(nl_query):
     with tracer.start_as_current_span("run_workflow"):

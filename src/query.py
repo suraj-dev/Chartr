@@ -1,19 +1,24 @@
 from dotenv import load_dotenv
-load_dotenv()
 import openai
 import os
 from src.db import get_connection
 from langchain.tools import tool
 
+load_dotenv()
+
 openai_api_key = os.getenv("OPENAI_KEY")
+
 openai_api_base = os.getenv("LLM_HOST")
 client = None
 schema_str = None
+
+
 def get_openai_client() -> openai.OpenAI:
     global client
     if client is None:
         client = openai.OpenAI(api_key=openai_api_key, base_url=openai_api_base)
     return client
+
 
 def extract_db_schema() -> str:
     global schema_str
@@ -31,12 +36,15 @@ def extract_db_schema() -> str:
 
         schema_str = ""
         for table in tables:
-            cursor.execute(f"""
+            cursor.execute(
+                """
                 SELECT column_name, data_type
                 FROM information_schema.columns
                 WHERE table_name = %s
                 ORDER BY ordinal_position
-            """, (table,))
+                """,
+                (table,),
+            )
             columns = cursor.fetchall()
             schema_str += f"Table '{table}':\n"
             for col_name, data_type in columns:
@@ -44,13 +52,16 @@ def extract_db_schema() -> str:
             schema_str += "\n"
     return schema_str
 
+
 def build_prompt(nl_query):
     schema_description = extract_db_schema()
     return (
         f"You are an SQL expert. The database has the following tables and columns:\n"
         f"{schema_description}\n"
-        f"Convert the following natural language query into an SQL query: '{nl_query}'. Return only the SQL query and nothing more."
+        f"Convert the following natural language query into an SQL query: '{nl_query}'. "
+        f"Return only the SQL query and nothing more."
     )
+
 
 @tool
 def verify_sql_query(sql_query: str) -> str:
@@ -66,6 +77,8 @@ def verify_sql_query(sql_query: str) -> str:
             return "no_results"
     except Exception as e:
         return f"error: {e}"
+
+
 def run_nl_to_sql_with_verification(nl_query):
     schema_description = extract_db_schema()
     # Build the prompt string
