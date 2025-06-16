@@ -1,10 +1,13 @@
 from dotenv import load_dotenv
-load_dotenv()
 import psycopg2
 import os
 import atexit
 
+load_dotenv()
+
 _connection = None
+
+
 def get_connection():
     global _connection
     if _connection is None:
@@ -22,12 +25,15 @@ def get_connection():
             close_connection()
     return _connection
 
+
 def close_connection():
     global _connection
     if _connection:
         _connection.close()
         _connection = None
         print("PostgreSQL connection closed")
+
+
 atexit.register(close_connection)
 
 if __name__ == "__main__":
