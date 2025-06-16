@@ -20,7 +20,7 @@ def get_chart_type(nl_query: str, sql_query: str, schema: str) -> ChartConfig:
     )
     client = get_openai_client()
     response = client.chat.completions.create(
-        model="gpt-4o",  # or your local LLM's name
+        model="hermes-3-llama-3.1-8b",  # or your local LLM's name
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7
     )
