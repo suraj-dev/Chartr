@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph
+from plotly.graph_objects import Figure
 from src.query import extract_db_schema, run_nl_to_sql_with_verification
 from src.db import get_connection
 from src.types import WorkflowState
@@ -35,10 +36,10 @@ def visualize_results(state: WorkflowState):
         print(results)
         chart_config = state["chart_config"]
         columns = state["column_names"]
-        plot_data(
+        chart = plot_data(
             results, chart_config.get("chart_type"), columns, chart_config.get("title")
         )
-        return {}
+        return {"chart": chart}
 
 
 def get_chart_recommendation(state: WorkflowState):
@@ -65,9 +66,9 @@ def create_workflow():
     return graph.compile()
 
 
-def run_workflow(nl_query):
+def run_workflow(nl_query) -> Figure:
     with tracer.start_as_current_span("run_workflow"):
         graph = create_workflow()
         initial_state = {"nl_query": nl_query}
         result = graph.invoke(initial_state)
-        return result
+        return result["chart"]
