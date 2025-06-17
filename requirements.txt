@@ -14,3 +14,4 @@ opentelemetry-exporter-jaeger
 flake8
 pre-commit
 black
+streamlit

@@ -1,5 +1,7 @@
 from typing import TypedDict
 
+from plotly.graph_objects import Figure
+
 
 class ChartConfig(TypedDict):
     chart_type: str
@@ -14,3 +16,4 @@ class WorkflowState(TypedDict):
     results: list
     column_names: list
     chart_config: ChartConfig
+    chart: Figure

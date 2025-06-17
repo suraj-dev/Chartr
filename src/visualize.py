@@ -53,5 +53,5 @@ def plot_data(data: list, chart_type: str, columns: list, title="Data Visualizat
         case _:
             raise ValueError(f"Unsupported chart type: {chart_type}")
 
-    fig.show()
+    # fig.show()
     return fig
